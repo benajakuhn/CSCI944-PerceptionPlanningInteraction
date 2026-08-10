@@ -26,7 +26,9 @@ MAX_SPEED = 6.28
 CRUISE_SPEED = 0.55 * MAX_SPEED
 OBSTACLE_THRESHOLD = 80.0
 
+print("My first Webots controller is running")
 while robot.step(TIME_STEP) != -1:
+    # print(f"simulation time = {robot.getTime():.2f} s")
     # TODO 4: Read all eight sensor values.
     values = [0.0] * 8
 
