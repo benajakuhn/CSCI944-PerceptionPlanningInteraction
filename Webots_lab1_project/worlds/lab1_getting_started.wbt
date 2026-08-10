@@ -1,0 +1,54 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/solids/protos/SolidBox.proto"
+
+WorldInfo {
+  info [
+    "Introductory laboratory for Perception, Planning and Interactions."
+    "The e-puck uses wheel motors and infrared proximity sensors to avoid obstacles."
+  ]
+  title "Lab 1 - Getting Started with Webots and Python"
+}
+Viewpoint {
+  orientation -0.23780298632032837 0.23850907965068122 0.9415748290079332 1.7840498689742237
+  position 0.552590119209564 -3.4254231015382697 1.9956745417157933
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 2.4 2
+  wallThickness 0.03
+  wallHeight 0.12
+}
+SolidBox {
+  translation 0.45 0.2 0.08
+  name "obstacle 1"
+  size 0.25 0.25 0.16
+}
+SolidBox {
+  translation -0.35 -0.25 0.08
+  rotation 0 0 1 0.55
+  name "obstacle 2"
+  size 0.38 0.16 0.16
+}
+SolidBox {
+  translation 0.15 -0.55 0.08
+  name "obstacle 3"
+  size 0.18 0.35 0.16
+}
+E-puck {
+  hidden position_0_0 3.0956066943559985e-08
+  hidden position_0_1 3.095608112638667e-08
+  hidden rotation_1 0 1 0 2.9802322387695313e-08
+  hidden rotation_2 0 1 0 2.9802322387695313e-08
+  translation 9.677344629240318e-11 1.7815266609015336e-11 -6.391454876114068e-05
+  rotation 0.9998611881359452 -0.01666146628853836 7.015071239881699e-07 1.190899045989971e-07
+  name "student e-puck"
+  controller "lab1_student"
+}
