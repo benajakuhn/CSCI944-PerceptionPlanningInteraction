@@ -11,10 +11,10 @@ TIME_STEP = int(robot.getBasicTimeStep())
 left_motor = robot.getDevice("left wheel motor")
 right_motor = robot.getDevice("right wheel motor")
 
-# TODO 1: Put both motors into velocity-control mode.
-# Hint: set the target position to float("inf").
-
-# TODO 2: Set both initial motor velocities to zero.
+left_motor.setPosition(float("inf"))
+right_motor.setPosition(float("inf"))
+left_motor.setVelocity(0.0)
+right_motor.setVelocity(0.0)
 
 proximity_sensors = []
 for index in range(8):
@@ -36,8 +36,14 @@ while robot.step(TIME_STEP) != -1:
     right_obstacle = 0.0
     left_obstacle = 0.0
 
-    left_speed = CRUISE_SPEED
-    right_speed = CRUISE_SPEED
+    #left_speed = CRUISE_SPEED
+    #right_speed = CRUISE_SPEED
+    
+    left_speed = -2.0
+    right_speed = 2.0
+    
+    left_motor.setVelocity(left_speed)
+    right_motor.setVelocity(right_speed)
 
     # TODO 6: If an obstacle is detected, turn away from the stronger signal.
 
