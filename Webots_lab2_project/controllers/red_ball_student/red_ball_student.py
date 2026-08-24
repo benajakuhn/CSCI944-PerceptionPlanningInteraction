@@ -65,8 +65,17 @@ def red_ball_object():
         (R high, G and B low)
     """
     # TODO 1: replace the next line.
-    return None
 
+    objects = camera.getRecognitionObjects()
+
+    for obj in objects:
+        colors = obj.getColors()
+        if colors:
+            r, g, b = colors[0], colors[1], colors[2]
+            if (r > 0.70 and g < 0.35 and b < 0.35):
+                return obj
+
+    return None
 
 def obstacle_ahead():
     """Return True when an obstacle is detected in front of the M-puck.
@@ -77,7 +86,10 @@ def obstacle_ahead():
       - compare their readings with OBSTACLE_THRESHOLD
     """
     # TODO 2: replace the next line.
-    return False
+    front_idx = [0,1,6,7]
+    front_vals = [proximity[i].getValue() for i in front_idx]
+    
+    return max(front_vals) > OBSTACLE_THRESHOLD
 
 
 def approach_ball(obj):
@@ -98,8 +110,15 @@ def approach_ball(obj):
     must turn left, not right.
     """
     # TODO 3: replace with your steering controller.
-    set_wheel_speeds(0.0, 0.0)
-
+    ball_x = obj.getPositionOnImage()[0]
+    centre_x = camera.getWidth() / 2
+    error = (ball_x - centre_x) / centre_x
+    
+    turn = TURN_GAIN * error
+    left = FORWARD_SPEED + turn
+    right = FORWARD_SPEED - turn
+    
+    set_wheel_speeds(left, right)
 
 print("Red-ball lab controller started.")
 print("Camera resolution:", camera.getWidth(), "x", camera.getHeight())
@@ -107,6 +126,7 @@ print("Camera resolution:", camera.getWidth(), "x", camera.getHeight())
 while robot.step(TIME_STEP) != -1:
     # Requirement: show every acquired camera frame.
     show_camera_image()
+    
 
     # Safety / task termination condition has priority.
     if obstacle_ahead():
@@ -119,9 +139,23 @@ while robot.step(TIME_STEP) != -1:
     if ball is None:
         # SEARCH: rotate in place until the ball enters the camera FOV.
         # TODO 4: choose wheel signs so the robot rotates on the spot.
-        set_wheel_speeds(0.0, 0.0)  # TODO 4
+        set_wheel_speeds(SEARCH_SPEED, -SEARCH_SPEED)  # TODO 4
     else:
         # APPROACH: keep the recognised ball near the image centre.
         approach_ball(ball)
 
 cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
