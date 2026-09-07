@@ -1,5 +1,6 @@
 #VRML_SIM R2025a utf8
 
+EXTERNPROTO "../protos/M-puck_GPS_IMU.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
@@ -23,7 +24,6 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/computers/protos/Monitor.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/computers/protos/Keyboard.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/chairs/protos/OfficeChair.proto"
-EXTERNPROTO "../protos/M-puck.proto"
 
 WorldInfo {
   info [
@@ -320,12 +320,12 @@ Wall {
   size 0.06 6.2 2.5
 }
 Door {
-  hidden translation_5 0.001070968974957398 5.82158901119012e-06 -6.661338147750939e-16
-  hidden rotation_5 0 0 -0.9999999999999999 0.00014940745114065635
+  hidden translation_5 0.0011419388189113852 1.1632574663245077e-05 -2.220446049250313e-16
+  hidden rotation_5 0 0 -0.9999999999999999 0.0002988149054620967
   translation 0 4.8 0
   rotation 0 0 -1 1.5708
   size 0.06 1 2.5
-  position -0.00014940745248633936
+  position -0.00029881490497241537
   frameSize 0.01 0.05 0.05
   frameAppearance MattePaint {
     baseColor 0.133333 0.0666667 0
@@ -497,9 +497,9 @@ Cabinet {
   }
 }
 Cabinet {
-  hidden position_6_0 -9.59724028160025e-06
-  hidden translation_7 -2.8647762240136976e-06 1.374689251321115e-11 0
-  hidden rotation_7 0 0 -1 9.597227029634072e-06
+  hidden position_6_0 -1.91944805632005e-05
+  hidden translation_7 -5.729552447763528e-06 5.498779209744953e-11 0
+  hidden rotation_7 0 0 -1 1.9194477195638747e-05
   translation -0.66 -2.49 0
   rotation 0 0 1 1.57079
   name "cabinet(5)"
@@ -527,12 +527,12 @@ Cabinet {
   }
 }
 Cabinet {
-  hidden position_6_0 7.90293921894434e-06
-  hidden translation_7 1.9658561306919404e-06 7.768147236575373e-12 0
-  hidden rotation_7 0 0 1 7.90295555304432e-06
-  hidden position_10_0 7.90293921893641e-06
-  hidden translation_11 1.9658561306899676e-06 7.768147236575373e-12 0
-  hidden rotation_11 0 0 1 7.90295555304432e-06
+  hidden position_6_0 1.5805878437876322e-05
+  hidden translation_7 3.931712261258026e-06 3.107217261266726e-11 0
+  hidden rotation_7 0 0 1 1.5805883009693947e-05
+  hidden position_10_0 1.5805878437886025e-05
+  hidden translation_11 3.93171226126044e-06 3.107217261266726e-11 0
+  hidden rotation_11 0 0 1 1.5805883009693947e-05
   translation -1.52 -2.5 0.1
   rotation 0 0 -1 -1.5707853071795865
   name "cabinet(6)"
@@ -1157,79 +1157,59 @@ Keyboard {
   name "keyboard(5)"
 }
 OfficeChair {
-  hidden position_0_0 -2.4063010687136455e-05
-  hidden rotation_1 0 0 -0.9999999999999999 2.4063008556812844e-05
-  translation 4.017939961883094 -0.04499977660532574 -0.001414537623072476
-  rotation 0.0007010325870197707 -0.00019333019490038822 0.9999997355883389 2.6180001338834296
+  hidden position_0_0 -4.6142057622766686e-05
+  hidden rotation_1 0 0 -1 4.6142061001338414e-05
+  translation 4.017939961885139 -0.04499977659843463 -0.001415335900334741
+  rotation 0.0007013348050174915 -0.00019342651988578675 0.9999997353578014 2.6180001340658894
 }
 OfficeChair {
-  hidden position_0_0 -2.4063010686248276e-05
-  hidden rotation_1 0 0 -1 2.4063008556812844e-05
-  translation 3.939999955292465 -1.5299999987976776 -0.0014145376230725037
-  rotation 0.0007024054230807097 -5.1244670527463344e-06 0.9999997533001503 3.1415900016796527
+  hidden position_0_0 -4.614205762187851e-05
+  hidden rotation_1 0 0 -1 4.6142061001338414e-05
+  translation 3.9399999552907894 -1.5299999987906876 -0.0014153359003348243
+  rotation 0.0007027114777685293 -5.138786343279069e-06 0.9999997530850556 3.1415900017468457
   name "office chair(1)"
 }
 OfficeChair {
-  hidden position_0_0 -2.4063010686248276e-05
-  hidden rotation_1 0 0 -1 2.4063008556812844e-05
-  translation 5.363880043495344 -1.4833799895901805 -0.001414537623072476
-  rotation 0.000663478510056075 -0.005340395643225035 0.9999855198804832 0.2618007494296742
+  hidden position_0_0 -4.614205762187851e-05
+  hidden rotation_1 0 0 -1 4.6142061001338414e-05
+  translation 5.363880043498771 -1.4833799895964985 -0.0014153359003349075
+  rotation 0.0006636757898190032 -0.005342734598881381 0.9999855072557061 0.2618007527644643
   name "office chair(2)"
 }
 OfficeChair {
-  hidden position_0_0 -2.4063010686248276e-05
-  hidden rotation_1 0 0 -1 2.4063008556812844e-05
-  translation -4.168759967536875 -1.9810399692371197 -0.0014145376230724205
-  rotation 0.0006900351080069238 -0.0017008805911199313 0.9999983154269634 0.7853981928523458
+  hidden position_0_0 -4.614205762187851e-05
+  hidden rotation_1 0 0 -1 4.6142061001338414e-05
+  translation -4.168759967530748 -1.981039969240878 -0.0014153359003348243
+  rotation 0.0006903065924994876 -0.0017016337892882699 0.9999983139582064 0.7853981939581082
   name "office chair(3)"
 }
 OfficeChair {
-  hidden position_0_0 -2.4063010686248276e-05
-  hidden rotation_1 0 0 -1 2.4063008556812844e-05
-  translation -3.9999999552924614 0.07000029879779693 -0.001414537623072476
-  rotation -0.0072940763125273035 -0.9999733978708227 1.195145744443479e-06 0.0014048483472366142
+  hidden position_0_0 -4.614205762187851e-05
+  hidden rotation_1 0 0 -1 4.6142061001338414e-05
+  translation -3.9999999552907863 0.07000029879080696 -0.0014153359003348243
+  rotation -0.0073112746536962885 -0.9999732722735115 1.2424331497379296e-06 0.0014054606496113062
   name "office chair(4)"
 }
 OfficeChair {
-  hidden position_0_0 -2.4063010686248276e-05
-  hidden rotation_1 0 0 -1 2.4063008556812844e-05
-  translation -4.069999967536876 1.8500000307628803 -0.0014145376230723927
-  rotation 0.0006900351080069419 -0.00170088059111987 0.9999983154269634 0.7853981928523458
+  hidden position_0_0 -4.614205762187851e-05
+  hidden rotation_1 0 0 -1 4.6142061001338414e-05
+  translation -4.069999967530748 1.850000030759122 -0.0014153359003348243
+  rotation 0.0006903065924995616 -0.0017016337892882152 0.9999983139582065 0.7853981939581081
   name "office chair(5)"
 }
-DEF RED_BALL Solid {
-  translation 5.05 3.55 0.18
-  children [
-    Shape {
-      appearance PBRAppearance {
-        baseColor 1 0 0
-        roughness 0.35
-        metalness 0
-      }
-      geometry Sphere {
-        radius 0.18
-        subdivision 3
-      }
-    }
-  ]
-  name "red ball"
-  boundingObject Sphere {
-    radius 0.18
-  }
-  physics Physics {
-    density -1
-    mass 0.15
-  }
-  recognitionColors [
-    1 0 0
-  ]
-}
-Robot {
-  name "ball randomizer"
-  controller "ball_randomizer"
-  supervisor TRUE
-}
-M-puck {
-  name "M-puck"
-  controller "red_ball_student"
+M-puck_GPS_IMU {
+  hidden position_0_0 21.612541884464136
+  hidden position_0_1 21.936833495674083
+  hidden linearVelocity_0 0.1374066597074604 0.015354472973784682 0.00012741965423105427
+  hidden angularVelocity_0 0.034424278683924905 -0.3097760472624487 0.01422201027233925
+  hidden rotation_1 0 -1 0 3.52019934425421
+  hidden linearVelocity_1 0.13266394580125826 0.014785742389532671 -2.735191453866652e-05
+  hidden angularVelocity_1 -0.2967111832757947 2.6524215167875904 0.013590681908624544
+  hidden rotation_2 0 -0.9999999999999999 0 3.1959077330442627
+  hidden linearVelocity_2 0.13449732924825286 0.015065484929413777 -2.880160560689548e-05
+  hidden angularVelocity_2 -0.3003143887264773 2.690962866976366 0.0144902353504466
+  translation 0.9553076757182002 0.45978250813283883 -0.00098742117683924
+  rotation 0.014231813625587158 -0.25374298069504614 0.9671669738100654 0.11545236922319006
+  name "M-puck GPS-IMU odometry"
+  controller "mpuck_odometry_student"
 }
