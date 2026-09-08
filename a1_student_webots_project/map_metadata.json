@@ -1,0 +1,17 @@
+{
+  "resolution_m": 0.02,
+  "shape_rows_cols": [
+    385,
+    643
+  ],
+  "world_x_min_m": -6.187,
+  "world_y_min_m": -2.92,
+  "world_x_max_m": 6.673,
+  "world_y_max_m": 4.78,
+  "occupancy_values": {
+    "free": 0,
+    "occupied": 100
+  },
+  "convention": "row increases with world y; column increases with world x",
+  "world_to_grid": "col=floor((x-x_min)/resolution); row=floor((y-y_min)/resolution)"
+}
