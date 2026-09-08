@@ -5,7 +5,7 @@ sceneTreePerspectives: 000000ff000000010000000300000026000002ff000000fa010000000
 maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
-textFiles: 0 "controllers/red_ball_student/red_ball_student.py"
+textFiles: 0 "../../Webots_lab2_project/controllers/red_ball_student/red_ball_student.py"
 consoles: Console:All:All
 renderingDevicePerspectives: M-puck:camera;1;1;0;0
 renderingDevicePerspectives: M-puck:depth camera;1;1;0;0
