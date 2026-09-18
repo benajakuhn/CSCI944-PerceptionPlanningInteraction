@@ -195,8 +195,8 @@ def front_obstacle():
     # Robot has 8 sensors ps0, ps1 are front right and ps6 and ps7 are front left
     front_sensors = [0,1,6,7]
 
-    # return true if any of the front sensors are above the threshold (80), meaning there is an object
-    return any(ps[i].getValue() > 80 for i in front_sensors)
+    # return true if any of the front sensors are above the threshold (100), meaning there is an object
+    return any(ps[i].getValue() > 100 for i in front_sensors)
 
 
 def find_green_ball():
@@ -229,7 +229,7 @@ def search_360():
     # keep track of the last yaw and total yaw covered
     last_yaw = yaw()
     total_yaw = 0.0
-    target_yaw = last_yaw + 2 * math.pi  # target yaw after full rotation
+    target_yaw = 2 * math.pi  # target yaw after full rotation
 
     # rotate in place
     set_speed(0.25 * MAX_SPEED, -0.25 * MAX_SPEED)
@@ -244,7 +244,7 @@ def search_360():
         # calculate change in yaw and accumulate total yaw covered
         current_yaw = yaw()
         yaw_diff = wrap_angle(current_yaw - last_yaw)
-        total_yaw += yaw_diff
+        total_yaw += abs(yaw_diff)
         last_yaw = current_yaw
 
         # check if total rotation is complete
@@ -301,7 +301,7 @@ def approach_ball(obj):
         # get position of ball relative to camera
         ball_pos = obj.getPosition()
         # check if ball is blocked by obstacle & obstacle is not the ball
-        if front_obstacle() and ball_pos[0] > 0.8:
+        if front_obstacle() and ball_pos[2] > 0.5:
             set_speed(0.0, 0.0)
             return "blocked"
 
@@ -324,7 +324,8 @@ def approach_ball(obj):
 
     return "lost"
 
-
+consecutive_blocks = 0
+last_block_pos = None
 def avoid_and_recover():
     """Execute obstacle avoidance plus an explicit anti-stuck strategy.
 
@@ -339,6 +340,62 @@ def avoid_and_recover():
 
     TODO: implement and document your strategy.
     """
+    global consecutive_blocks, last_block_pos
+    curr_x, curr_y = xy()
+
+    # Update escalation count based on distance traveled since last blockage
+    if last_block_pos is not None:
+        dist_moved = math.hypot(curr_x - last_block_pos[0], curr_y - last_block_pos[1])
+        # Reset block count if there has been more than 0.35m movement since last blockage
+        if dist_moved >= 0.35:
+            consecutive_blocks = 1
+        else:
+            consecutive_blocks += 1
+    else:
+        consecutive_blocks = 1
+
+    last_block_pos = (curr_x, curr_y) # update last block position
+
+
+    # reverse 0.1m to get clearance
+    start_x, start_y = xy()
+    set_speed(-2, -2)
+    while simulation_step():
+        curr_x, curr_y = xy()
+        if math.hypot(curr_x - start_x, curr_y - start_y) > 0.1:
+            set_speed(0.0, 0.0)
+            break
+
+    # pick turn direction away from the obstacle
+    left_measure = ps[6].getValue() + ps[7].getValue()
+    right_measure = ps[0].getValue() + ps[1].getValue()
+    if right_measure >= left_measure:
+        turn_direction = -1
+    else:
+        turn_direction = 1
+
+    # escalate random turn angle after repeated blockage
+    if consecutive_blocks <= 2:
+        target_yaw = random.uniform(math.pi / 3, math.pi / 2)  # 60 to 90 deg
+    else:
+        target_yaw = random.uniform(2 * math.pi / 3, math.pi)  # 120 to 180 deg
+
+    last_yaw = yaw()
+    total_yaw = 0.0
+    set_speed(2 * turn_direction, -2 * turn_direction)
+
+    # execute the turn
+    while simulation_step():
+        current_yaw = yaw()
+        yaw_diff = wrap_angle(current_yaw - last_yaw)
+        total_yaw += abs(yaw_diff)
+        last_yaw = current_yaw
+
+        if total_yaw >= target_yaw:
+            set_speed(0.0, 0.0)
+            break
+
+    set_speed(0.0, 0.0)
     pass
 
 
@@ -355,7 +412,56 @@ def random_relocation(distance_m=0.5):
       * detect lack of progress so the robot does not remain stuck;
       * keep the camera display active by calling simulation_step().
     """
-    pass
+    target_direction = wrap_angle(yaw() + random.uniform(-math.pi, math.pi))
+    turn_speed = 1.5
+
+    while simulation_step():
+        # error from target direction
+        error = wrap_angle(target_direction - yaw())
+
+        #if the error is small enough stop turning
+        if abs(error) < 0.05:
+            set_speed(0.0, 0.0)
+            break
+        elif error > 0:
+            # turn left
+            set_speed(-turn_speed, turn_speed)
+        else:
+            # turn right
+            set_speed(turn_speed, -turn_speed)
+
+    start_x, start_y = xy()
+    window_x, window_y = start_x, start_y
+    steps = 0
+
+    set_speed(2.0, 2.0) # move forward
+
+    while simulation_step():
+        steps += 1
+        curr_x, curr_y = xy() #current postion
+        displacement = math.hypot(curr_x - start_x, curr_y - start_y) # total distance travelled
+
+        # check if the robot has travelled target distance
+        if displacement >= distance_m:
+            set_speed(0.0, 0.0)
+            return "relocated"
+
+        # detect lack of progress by checking every 40 steps if the robot has moved at least 2 cm
+        if steps > 40:
+            window_displacement = math.hypot(curr_x - window_x, curr_y - window_y)
+            if window_displacement < 0.02:  # Moved less than 2 cm despite wheels driving
+                set_speed(0.0, 0.0)
+                return "stuck"
+            window_x, window_y = curr_x, curr_y
+            steps = 0
+
+        # detect obstacle blocking robot
+        if front_obstacle():
+            set_speed(0.0, 0.0)
+            return "blocked"
+
+    set_speed(0.0, 0.0)
+    return "stuck"
 
 
 # =============================================================================
@@ -372,25 +478,56 @@ def random_relocation(distance_m=0.5):
 # You may implement this with explicit state strings/enums or with structured
 # function calls. The submitted design should be clear and explained in the PDF.
 
-status = "lost"
+state = "SEARCH"
 ball = None
+done = False
 while simulation_step():
-    # TODO: implement the complete Task 1 control/state logic.
-    if status == "lost":
+    if state == "SEARCH":
+        print("Starting SEARCH")
         ball = search_360()
-    if ball:
-        status = approach_ball(ball)
-        if status == "reached":
-            print("Target reached!")
-        elif status == "lost":
-            print("Target lost!")
-        elif status == "blocked":
-            print("Target blocked!")
+        if ball is not None:
+            print("[SEARCH] Target ball detected. Switching to APPROACH.")
+            state = "APPROACH"
+        else:
+            print("[SEARCH] No ball found in 360 scan. Switching to RELOCATE.")
+            state = "RELOCATE"
 
+    elif state == "APPROACH":
+        print("starting APPROACH")
+        result = approach_ball(ball)
+        if result == "reached":
+            print("[APPROACH] Target successfully reached! Transitioning to DONE.")
+            state = "DONE"
+        elif result == "blocked":
+            print("[APPROACH] Blocked by obstacle. Switching to AVOID.")
+            state = "AVOID"
+        else:
+            print("[APPROACH] Target lost from view. Returning to SEARCH.")
+            ball = None
+            state = "SEARCH"
 
+    elif state == "RELOCATE":
+        print("starting RELOCATE")
+        res = random_relocation()
+        if res == "blocked" or res == "stuck":
+            print(f"[RELOCATE] Relocation interrupted ({res}). Switching to AVOID.")
+            state = "AVOID"
+        else:
+            print("[RELOCATE] Relocation complete. Returning to SEARCH.")
+            state = "SEARCH"
 
-    set_speed(0.0, 0.0)
+    elif state == "AVOID":
+        print("starting AVOID")
+        avoid_and_recover()
+        print("[AVOID] Clearance created. Returning to SEARCH.")
+        ball = None
+        state = "SEARCH"
 
+    elif state == "DONE":
+        set_speed(0.0, 0.0)
+        if not done:
+            print("[STATE] Task complete. Motors stopped.")
+            done = True
 # Stop motors and close the OpenCV window if the simulation exits normally.
 set_speed(0.0, 0.0)
 cv2.destroyAllWindows()
