@@ -227,6 +227,32 @@ def search_360():
       * accumulate rotation until approximately 2*pi radians has been covered;
       * call simulation_step(), not robot.step(), so the live image remains on.
     """
+    # keep track of the last yaw and total yaw covered
+    last_yaw = yaw()
+    total_yaw = 0.0
+    target_yaw = last_yaw + 2 * math.pi  # target yaw after full rotation
+
+    # rotate in place
+    set_speed(0.25 * MAX_SPEED, -0.25 * MAX_SPEED)
+
+    while simulation_step():
+        # check if the ball is visible
+        ball = find_green_ball()
+        if ball:
+            set_speed(0.0, 0.0)
+            return ball
+
+        # calculate change in yaw and accumulate total yaw covered
+        current_yaw = yaw()
+        yaw_diff = wrap_angle(current_yaw - last_yaw)
+        total_yaw += yaw_diff
+        last_yaw = current_yaw
+
+        # check if total rotation is complete
+        if total_yaw >= target_yaw:
+            break
+
+    set_speed(0.0, 0.0)
     return None
 
 
