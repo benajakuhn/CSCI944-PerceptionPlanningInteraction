@@ -186,12 +186,17 @@ def xy():
 def front_obstacle():
     """Return True when the selected front proximity sensors indicate blockage.
 
-    TODO:
+
       * decide which proximity sensors represent the forward direction;
-      * choose/calibrate threshold(s);
+      * choose/calibrate threshold(s)
+    TODO:
       * justify the choices in the report.
     """
-    return False
+    # Robot has 8 sensors ps0, ps1 are front right and ps6 and ps7 are front left
+    front_sensors = [0,1,6,7]
+
+    # return true if any of the front sensors are above the threshold (80), meaning there is an object
+    return any(ps[i].getValue() > 80 for i in front_sensors)
 
 
 def find_green_ball():
@@ -202,7 +207,10 @@ def find_green_ball():
       * the supplied is_green() helper can be used;
       * do not use TARGET_BALL ground truth in this task.
     """
-    # TODO: implement recognition-object selection.
+    # loop through all objects and return green ball if found otherwise return None
+    for obj in camera.getRecognitionObjects():
+        if is_green(obj):
+            return obj
     return None
 
 
