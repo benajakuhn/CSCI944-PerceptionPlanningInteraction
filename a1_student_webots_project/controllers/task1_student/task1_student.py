@@ -221,7 +221,6 @@ def search_360():
     the ball becomes visible, stop the rotation and return the object. If one
     full scan finishes without detection, stop and return None.
 
-    TODO:
       * use IMU yaw rather than relying only on a fixed time;
       * correctly handle wraparound at -pi/+pi;
       * accumulate rotation until approximately 2*pi radians has been covered;
@@ -283,7 +282,47 @@ def approach_ball(obj):
     Return a useful status (for example reached/lost/blocked) or design an
     equivalent state transition mechanism.
     """
-    pass
+
+    while simulation_step():
+        obj = find_green_ball()
+
+        # Ball not visible -> lost
+        if obj is None:
+            set_speed(0.0, 0.0)
+            return "lost"
+
+        # check if ball is reached
+        _ , ball_h = obj.getSizeOnImage() #size of the ball in the image
+        # check if the ball is close to the camera (ball fills 60% of the image vertically)
+        if ball_h > 0.6 * camera.getHeight():
+            set_speed(0.0, 0.0)
+            return "reached"
+
+        # get position of ball relative to camera
+        ball_pos = obj.getPosition()
+        # check if ball is blocked by obstacle & obstacle is not the ball
+        if front_obstacle() and ball_pos[0] > 0.8:
+            set_speed(0.0, 0.0)
+            return "blocked"
+
+        # find the horizontal position of the ball in the image
+        u_ball, _ = obj.getPositionOnImage()
+        # find the horizontal centre of the image
+        image_centre_x = camera.getWidth() // 2
+
+        # calculate the steering error based on the ball's position relative to the image centre
+        error = (u_ball - image_centre_x) / image_centre_x
+
+        speed_diff = 2.0
+        base_speed = 2.5
+
+
+        # set the wheel speeds based on the steering error
+        left_wheel_speed = base_speed + speed_diff * error
+        right_wheel_speed = base_speed - speed_diff * error
+        set_speed(left_wheel_speed, right_wheel_speed)
+
+    return "lost"
 
 
 def avoid_and_recover():
@@ -333,8 +372,23 @@ def random_relocation(distance_m=0.5):
 # You may implement this with explicit state strings/enums or with structured
 # function calls. The submitted design should be clear and explained in the PDF.
 
+status = "lost"
+ball = None
 while simulation_step():
     # TODO: implement the complete Task 1 control/state logic.
+    if status == "lost":
+        ball = search_360()
+    if ball:
+        status = approach_ball(ball)
+        if status == "reached":
+            print("Target reached!")
+        elif status == "lost":
+            print("Target lost!")
+        elif status == "blocked":
+            print("Target blocked!")
+
+
+
     set_speed(0.0, 0.0)
 
 # Stop motors and close the OpenCV window if the simulation exits normally.
