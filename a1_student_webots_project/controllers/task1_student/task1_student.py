@@ -395,11 +395,23 @@ def avoid_and_recover():
             set_speed(0.0, 0.0)
             break
 
+    # move forward 0.5m to clear the obstacle
+    start_x, start_y = xy()
+    set_speed(2.0, 2.0)
+    while simulation_step():
+        # avoid getting stuck by avoiding if a new obstacle is detected
+        if front_obstacle():
+            set_speed(0.0, 0.0)
+            avoid_and_recover()
+        curr_x, curr_y = xy()
+        if math.hypot(curr_x - start_x, curr_y - start_y) > 0.5:
+            break
+
     set_speed(0.0, 0.0)
     pass
 
 
-def random_relocation(distance_m=0.5):
+def random_relocation(distance_m=1):
     """Move about distance_m in a randomly selected direction, then stop.
 
     This behaviour is used only after a complete 360-degree search fails.
