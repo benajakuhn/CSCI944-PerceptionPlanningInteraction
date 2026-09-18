@@ -195,8 +195,8 @@ def front_obstacle():
     # Robot has 8 sensors ps0, ps1 are front right and ps6 and ps7 are front left
     front_sensors = [0,1,6,7]
 
-    # return true if any of the front sensors are above the threshold (100), meaning there is an object
-    return any(ps[i].getValue() > 100 for i in front_sensors)
+    # return true if any of the front sensors are above the threshold (80), meaning there is an object
+    return any(ps[i].getValue() > 80 for i in front_sensors)
 
 
 def find_green_ball():
@@ -293,8 +293,8 @@ def approach_ball(obj):
 
         # check if ball is reached
         _ , ball_h = obj.getSizeOnImage() #size of the ball in the image
-        # check if the ball is close to the camera (ball fills 60% of the image vertically)
-        if ball_h > 0.6 * camera.getHeight():
+        # check if the ball is close to the camera (ball fills 80% of the image vertically)
+        if ball_h > 0.8 * camera.getHeight():
             set_speed(0.0, 0.0)
             return "reached"
 
@@ -411,7 +411,7 @@ def avoid_and_recover():
     pass
 
 
-def random_relocation(distance_m=1):
+def random_relocation(distance_m=0.5):
     """Move about distance_m in a randomly selected direction, then stop.
 
     This behaviour is used only after a complete 360-degree search fails.
