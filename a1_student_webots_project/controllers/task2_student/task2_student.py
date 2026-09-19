@@ -257,10 +257,35 @@ def compress_path(path):
     is unnecessary. The reference solution retains the first cell, direction-
     change cells, and the final cell.
 
-    TODO: implement this optional path reduction, or justify another waypoint
+    implement this optional path reduction, or justify another waypoint
     selection/smoothing strategy.
     """
-    return path
+    # check if path length is 2 or more to avoid errors
+    if len(path) <= 2:
+        return path
+
+    # init compressed path
+    compressed_path = [path[0]]
+
+    # find initial direction
+    prev_dr = path[1][0] - path[0][0]
+    prev_dc = path[1][1] - path[0][1]
+
+    for i in range(2, len(path) - 1):
+        # calc direction change
+        dr = path[i][0] - path[i - 1][0]
+        dc = path[i][1] - path[i - 1][1]
+
+        # if the direction changes, add the current cell to the compressed path
+        if dr != prev_dr or dc != prev_dc:
+            compressed_path.append(path[i])
+            prev_dr = dr
+            prev_dc = dc
+
+    # add the final cell to the compressed path
+    compressed_path.append(path[-1])
+
+    return compressed_path
 
 
 # =============================================================================
@@ -280,7 +305,7 @@ def save_path_png(occ, path, start, goal, filename="planned_path.png"):
       * convert path cells to world coordinates using grid_to_world();
       * clearly mark start and goal.
 
-    TODO: create and save the required path visualisation.
+    create and save the required path visualisation.
     """
     # calculate the extents of the map
     rows, cols = occ.shape
@@ -350,7 +375,58 @@ def follow_path(path_xy):
       * stop the motors at success;
       * keep calling robot.step(TIME_STEP) while following the route.
     """
-    pass
+    # existence check
+    if not path_xy:
+        return
+
+    # set speeds and tolerances
+    base_speed = 4.0 # forward speed
+    turn_speed = 2.5 # turning speed
+    kp = 3.0 # proportional gain for turning
+    turn_threshold = 0.4 # turn if heading error is larger than this
+
+    # tolerance for final waypoint is larger to account for ball radius
+    waypoint_tolerance = 0.10
+    final_tolerance = 0.22 # account for ball radius and robot size
+
+    # go through the path one by one
+    for i, (wx, wy) in enumerate(path_xy):
+        # set tolerance based on where we are
+        is_final = (i == len(path_xy) - 1)
+        tolerance = final_tolerance if is_final else waypoint_tolerance
+
+        while robot.step(TIME_STEP) != -1:
+            # get current robot position and heading
+            rx, ry = get_robot_xy()
+            yaw = get_robot_yaw()
+
+            # compute distance to waypoint
+            dx = wx - rx
+            dy = wy - ry
+            dist = math.hypot(dx, dy)
+
+            # stop if close enough to the waypoint
+            if dist < tolerance:
+                break
+
+            # compute target heading
+            target_heading = math.atan2(dy, dx)
+            # compute heading error
+            heading_error = wrap_angle(target_heading - yaw)
+
+            # if a turn needs to be done, do it
+            if abs(heading_error) > turn_threshold:
+                if heading_error > 0:
+                    set_speed(-turn_speed, turn_speed)
+                else:
+                    set_speed(turn_speed, -turn_speed)
+            else:
+                # compute speed adjustment based on heading error
+                left = base_speed - kp * heading_error
+                right = base_speed + kp * heading_error
+                set_speed(left, right)
+
+    set_speed(0.0, 0.0)
 
 
 # =============================================================================
