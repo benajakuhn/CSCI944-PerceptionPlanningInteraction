@@ -189,7 +189,6 @@ def front_obstacle():
 
       * decide which proximity sensors represent the forward direction;
       * choose/calibrate threshold(s)
-    TODO:
       * justify the choices in the report.
     """
     # Robot has 8 sensors ps0, ps1 are front right and ps6 and ps7 are front left
@@ -269,8 +268,6 @@ def approach_ball(obj):
     The reference solution also avoids treating the target itself as an
     obstacle during the final close approach. Design and explain your own
     reliable logic.
-
-    TODO:
       * centre the recognised ball and move toward it;
       * choose forward/turn gains and speed limits;
       * define a practical "reached" criterion for a radius-0.18 m ball;
@@ -338,7 +335,7 @@ def avoid_and_recover():
       * escalate the recovery turn after repeated blockage;
       * remember recent failed escape directions.
 
-    TODO: implement and document your strategy.
+    implement and document your strategy.
     """
     global consecutive_blocks, last_block_pos
     curr_x, curr_y = xy()
@@ -415,8 +412,6 @@ def random_relocation(distance_m=0.5):
     """Move about distance_m in a randomly selected direction, then stop.
 
     This behaviour is used only after a complete 360-degree search fails.
-
-    TODO:
       * choose a random heading/direction;
       * turn using IMU feedback;
       * use GPS displacement to measure approximately 0.5 m travel;
