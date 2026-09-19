@@ -157,6 +157,96 @@ def astar(occ, start, goal):
     TODO: implement A* explicitly. Do not call an external path-planning library.
     Return [] when no path exists.
     """
+    # make sure start and goal are free
+    if not cell_is_free(occ, start) or not cell_is_free(occ, goal):
+        return []
+
+    # helper function to compute heuistic value of a cell
+    def heuristic(cell):
+        # Euclidean distance between cell and goal
+        return math.hypot(cell[0] - goal[0], cell[1] - goal[1])
+
+    # create an open list
+    open_list = []
+    # store it as a min heap (f(n), g(n), cell) - is sorted by lowest f first
+    heapq.heappush(open_list, (heuristic(start), 0.0, start))
+
+    # create a closed list
+    closed_list = set()
+
+    # cost lookup table
+    g_cost = {start: 0.0}
+
+    # predecessor dictionary for path reconstruction
+    came_from = {}
+
+    # possible moves and their costs
+    moves = [
+        # horizontal/vertical, cost = 1.0
+        (-1, 0, 1.0),
+        (1, 0, 1.0),
+        (0, -1, 1.0),
+        (0, 1, 1.0),
+        # diagonal: cost = sqrt(2)
+        (-1, -1, math.sqrt(2)),
+        (-1, 1, math.sqrt(2)),
+        (1, -1, math.sqrt(2)),
+        (1, 1, math.sqrt(2)),
+    ]
+
+    while open_list:
+        # get node with lowest f(n)
+        f_curr, g_curr, curr = heapq.heappop(open_list)
+
+        # if the node is already closed, skip it
+        if curr in closed_list:
+            continue
+
+        # goal has been reached, reconstruct path and return it
+        if curr == goal:
+            path = []
+            # path reconstruction
+            while curr in came_from:
+                path.append(curr)
+                curr = came_from[curr]
+            path.append(start)
+            # reverse path to represent the robots route
+            path.reverse()
+            return path
+
+        # add curr to closed list
+        closed_list.add(curr)
+
+        # explore neighbors
+        for dr, dc, cost in moves:
+            neighbor = (curr[0] + dr, curr[1] + dc)
+
+            # check if the neighbor is valid (free and in bounds)
+            if not cell_is_free(occ, neighbor):
+                continue
+
+            # check if a neighbor is already closed
+            if neighbor in closed_list:
+                continue
+
+            # check if there is no diagonal cutting
+            if dr != 0 and dc != 0:
+                if not cell_is_free(occ, (curr[0] + dr, curr[1])) or not cell_is_free(occ, (curr[0], curr[1] + dc)):
+                    continue
+
+            # tentative g score to reach this neighbor via curr
+            tentative_g = g_curr + cost
+
+            # if we have a better path to this neighbor, update it
+            if tentative_g <  g_cost.get(neighbor, float('inf')):
+                # update in cost lookup table
+                g_cost[neighbor] = tentative_g
+                # calculate f(n) = g(n) + h(n)
+                f = tentative_g + heuristic(neighbor)
+                # update in open list
+                heapq.heappush(open_list, (f, tentative_g, neighbor))
+                # update predecessor
+                came_from[neighbor] = curr
     return []
 
 
