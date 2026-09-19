@@ -284,8 +284,6 @@ def approach_ball(obj):
     """
 
     while simulation_step():
-        obj = find_green_ball()
-
         # Ball not visible -> lost
         if obj is None:
             set_speed(0.0, 0.0)
@@ -321,6 +319,8 @@ def approach_ball(obj):
         left_wheel_speed = base_speed + speed_diff * error
         right_wheel_speed = base_speed - speed_diff * error
         set_speed(left_wheel_speed, right_wheel_speed)
+
+        obj = find_green_ball()  # update the ball object for the next iteration
 
     return "lost"
 
@@ -402,13 +402,13 @@ def avoid_and_recover():
         # avoid getting stuck by avoiding if a new obstacle is detected
         if front_obstacle():
             set_speed(0.0, 0.0)
-            avoid_and_recover()
+            return "blocked"
         curr_x, curr_y = xy()
         if math.hypot(curr_x - start_x, curr_y - start_y) > 0.5:
             break
 
     set_speed(0.0, 0.0)
-    pass
+    return "avoided"
 
 
 def random_relocation(distance_m=0.5):
@@ -530,10 +530,15 @@ while simulation_step():
 
     elif state == "AVOID":
         print("starting AVOID")
-        avoid_and_recover()
-        print("[AVOID] Clearance created. Returning to SEARCH.")
-        ball = None
-        state = "SEARCH"
+        res = avoid_and_recover()
+        if res == "avoided":
+            print("[AVOID] Clearance created. Returning to SEARCH.")
+            ball = None
+            state = "SEARCH"
+        else:
+            print(f"[AVOID] Avoidance blocked ({res}). Continuing with AVOID.")
+            ball = None
+            state = "AVOID"
 
     elif state == "DONE":
         set_speed(0.0, 0.0)
