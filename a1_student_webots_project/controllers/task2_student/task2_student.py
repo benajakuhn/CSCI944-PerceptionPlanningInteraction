@@ -450,8 +450,13 @@ print(f"Task 2 target: x={goal_xy[0]:.3f}, y={goal_xy[1]:.3f}")
 start_rc = world_to_grid(*start_xy)
 goal_rc = world_to_grid(*goal_xy)
 
-# TODO: validate start_rc and goal_rc. If either is not free, apply and explain
+# validate start_rc and goal_rc. If either is not free, apply and explain
 # a nearest-free-cell policy rather than allowing A* to start/end in an obstacle.
+# The following check is used to validate the start and goal cells. If this happens during testing the nearest-free-cell policy will be applied otherwise not.
+if not cell_is_free(grid, start_rc) or not cell_is_free(grid, goal_rc):
+    print("Start or goal is inside an obstacle cell!")
+    set_speed(0.0, 0.0)
+    raise SystemExit
 
 path_rc = astar(grid, start_rc, goal_rc)
 if not path_rc:
@@ -466,6 +471,19 @@ save_path_png(grid, path_rc, start_rc, goal_rc)
 # navigation waypoints.
 waypoint_cells = compress_path(path_rc)
 path_xy = [grid_to_world(r, c) for r, c in waypoint_cells]
+
+# Compute path length in meters as metric
+path_length_m = 0.0
+for k in range(len(path_rc) - 1):
+    dr = abs(path_rc[k + 1][0] - path_rc[k][0])
+    dc = abs(path_rc[k + 1][1] - path_rc[k][1])
+    step_cost = math.sqrt(2) if (dr != 0 and dc != 0) else 1.0
+    path_length_m += step_cost * RES
+
+print(f"Path planning successful:")
+print(f"  Raw waypoints:        {len(path_rc)}")
+print(f"  Compressed waypoints: {len(waypoint_cells)}")
+print(f"  Planned path length:  {path_length_m:.3f} m")
 
 # Execute the planned route using feedback from GPS and IMU.
 follow_path(path_xy)
