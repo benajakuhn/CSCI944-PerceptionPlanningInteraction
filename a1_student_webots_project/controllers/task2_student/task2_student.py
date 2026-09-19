@@ -387,18 +387,25 @@ def follow_path(path_xy):
 
     # tolerance for final waypoint is larger to account for ball radius
     waypoint_tolerance = 0.10
-    final_tolerance = 0.22 # account for ball radius and robot size
+    final_tolerance = 0.26 # account for ball radius and robot size
+
+    # target coordinates
+    tx, ty = path_xy[-1]
 
     # go through the path one by one
     for i, (wx, wy) in enumerate(path_xy):
-        # set tolerance based on where we are
-        is_final = (i == len(path_xy) - 1)
-        tolerance = final_tolerance if is_final else waypoint_tolerance
-
         while robot.step(TIME_STEP) != -1:
             # get current robot position and heading
             rx, ry = get_robot_xy()
             yaw = get_robot_yaw()
+
+            # compute distance to target
+            dist = math.hypot(tx - rx, ty - ry)
+
+            # return if close enough to the target
+            if dist < final_tolerance:
+                set_speed(0.0, 0.0)
+                return
 
             # compute distance to waypoint
             dx = wx - rx
@@ -406,8 +413,9 @@ def follow_path(path_xy):
             dist = math.hypot(dx, dy)
 
             # stop if close enough to the waypoint
-            if dist < tolerance:
+            if dist < waypoint_tolerance:
                 break
+
 
             # compute target heading
             target_heading = math.atan2(dy, dx)
@@ -485,6 +493,13 @@ print(f"  Raw waypoints:        {len(path_rc)}")
 print(f"  Compressed waypoints: {len(waypoint_cells)}")
 print(f"  Planned path length:  {path_length_m:.3f} m")
 
+start_time = robot.getTime()
+
 # Execute the planned route using feedback from GPS and IMU.
 follow_path(path_xy)
+
+# Print the total time taken to complete the path.
+time_taken = robot.getTime() - start_time
+print(f"Path following complete in {time_taken:.3f} seconds")
+
 set_speed(0.0, 0.0)
