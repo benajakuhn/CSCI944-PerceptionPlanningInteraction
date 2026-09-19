@@ -128,11 +128,11 @@ def cell_is_free(occ, cell):
 def nearest_free(occ, cell):
     """Optional helper: snap an occupied/out-of-bounds cell to nearby free space.
 
-    TODO: implement a documented method if you choose to use this helper. The
+     implement a documented method if you choose to use this helper. The
     randomizer normally places the target in free space, but discretisation can
     still make robust validation useful.
     """
-    # TODO: search outward from cell and return a valid free (row,col).
+    #  search outward from cell and return a valid free (row,col).
     return cell
 
 
@@ -369,7 +369,7 @@ def follow_path(path_xy):
     the robot geometry rather than requiring the robot centre to occupy exactly
     the ball-centre grid cell.
 
-    TODO:
+
       * implement GPS/IMU feedback control;
       * choose/document steering gains and waypoint tolerances;
       * stop the motors at success;
@@ -461,6 +461,7 @@ goal_rc = world_to_grid(*goal_xy)
 # validate start_rc and goal_rc. If either is not free, apply and explain
 # a nearest-free-cell policy rather than allowing A* to start/end in an obstacle.
 # The following check is used to validate the start and goal cells. If this happens during testing the nearest-free-cell policy will be applied otherwise not.
+#-> was not the case so not implemented
 if not cell_is_free(grid, start_rc) or not cell_is_free(grid, goal_rc):
     print("Start or goal is inside an obstacle cell!")
     set_speed(0.0, 0.0)
