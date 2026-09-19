@@ -154,7 +154,7 @@ def astar(occ, start, goal):
       * if diagonals are allowed, prevent corner-cutting by checking the two
         adjacent cardinal cells.
 
-    TODO: implement A* explicitly. Do not call an external path-planning library.
+    implement A* explicitly. Do not call an external path-planning library.
     Return [] when no path exists.
     """
     # make sure start and goal are free
@@ -282,7 +282,45 @@ def save_path_png(occ, path, start, goal, filename="planned_path.png"):
 
     TODO: create and save the required path visualisation.
     """
-    pass
+    # calculate the extents of the map
+    rows, cols = occ.shape
+    x_max = X_MIN + cols * RES
+    y_max = Y_MIN + rows * RES
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # create the plot
+    ax.imshow(
+        occ,
+        origin="lower",
+        cmap="gray_r",
+        extent=[X_MIN, x_max, Y_MIN, y_max],
+        interpolation="nearest",
+    )
+
+    # if a path exists, plot it
+    if path:
+        path_x = [grid_to_world(r, c)[0] for r, c in path]
+        path_y = [grid_to_world(r, c)[1] for r, c in path]
+        ax.plot(path_x, path_y, color="crimson", linewidth=1.8, label="A* Path")
+
+    # plot start and goal
+    start_x, start_y = grid_to_world(*start)
+    goal_x, goal_y = grid_to_world(*goal)
+
+    ax.plot(start_x, start_y, "bo", markersize=6, label="Start")
+    ax.plot(goal_x, goal_y, "g*", markersize=10, label="Goal")
+
+    # add labels and legend
+    ax.set_xlabel("World X (m)")
+    ax.set_ylabel("World Y (m)")
+    ax.set_title("A* Planned Path on Inflated Occupancy Grid")
+    ax.legend(loc="upper right")
+    ax.set_aspect("equal")
+
+    # save the plot
+    plt.savefig(filename, bbox_inches="tight", dpi=300)
+    plt.close(fig)
 
 
 # =============================================================================
