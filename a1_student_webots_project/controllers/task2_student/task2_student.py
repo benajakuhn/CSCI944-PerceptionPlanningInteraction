@@ -16,6 +16,7 @@ from controller import Supervisor
 from pathlib import Path
 import heapq
 import math
+from collections import deque
 
 import matplotlib.pyplot as plt
 import numpy as np
