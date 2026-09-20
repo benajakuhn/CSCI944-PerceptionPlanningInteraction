@@ -132,7 +132,43 @@ def nearest_free(occ, cell):
     randomizer normally places the target in free space, but discretisation can
     still make robust validation useful.
     """
-    #  search outward from cell and return a valid free (row,col).
+    # if cell is free nothing needs to be done
+    if cell_is_free(occ, cell):
+        return cell
+
+    # queue cells to be explored
+    queue = deque([cell])
+    # visited cells
+    visited = {cell}
+
+    # all surrounding neighbors
+    directions = [
+        (-1, 0), (1, 0), (0, -1), (0, 1),
+        (-1, -1), (-1, 1), (1, -1), (1, 1)
+    ]
+
+    #  BFS -> search outward from cell and return a valid free cell.
+    while queue:
+        # row and col of the cell to be explored
+        curr_r, curr_c = queue.popleft()
+
+        # go through all neighbors
+        for dr, dc in directions:
+            # create the new neighbor cell
+            nr, nc = curr_r + dr, curr_c + dc
+            neighbor = (nr, nc)
+
+            # check if neighbor new and in bounds
+            if neighbor not in visited:
+                if 0 <= nr < occ.shape[0] and 0 <= nc < occ.shape[1]:
+                    # if it is free a solution has been found
+                    if cell_is_free(occ, neighbor):
+                        return neighbor
+
+                    # otherwise mark as visited and add to queue
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+
     return cell
 
 
@@ -459,13 +495,11 @@ start_rc = world_to_grid(*start_xy)
 goal_rc = world_to_grid(*goal_xy)
 
 # validate start_rc and goal_rc. If either is not free, apply and explain
-# a nearest-free-cell policy rather than allowing A* to start/end in an obstacle.
-# The following check is used to validate the start and goal cells. If this happens during testing the nearest-free-cell policy will be applied otherwise not.
-#-> was not the case so not implemented
-if not cell_is_free(grid, start_rc) or not cell_is_free(grid, goal_rc):
-    print("Start or goal is inside an obstacle cell!")
-    set_speed(0.0, 0.0)
-    raise SystemExit
+# a nearest-free-cell policy rather than allowing A* to start/end in an obstacle.\
+
+# make sure that the start and goal are in a free cell.
+start_rc = nearest_free(grid, start_rc)
+goal_rc = nearest_free(grid, goal_rc)
 
 path_rc = astar(grid, start_rc, goal_rc)
 if not path_rc:
