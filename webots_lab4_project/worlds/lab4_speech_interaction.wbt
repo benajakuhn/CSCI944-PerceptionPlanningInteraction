@@ -1,0 +1,116 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  fieldOfView 0.9
+  orientation 0 1 0 1.57079632679
+  position 0 0 1.8
+  near 0.01
+}
+Background {
+  skyColor [
+    0.84 0.9 1
+  ]
+}
+DirectionalLight {
+  ambientIntensity 0.8
+  direction -0.4 -0.6 -1
+  intensity 0.8
+}
+Solid {
+  translation 0 0 -0.025
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.72 0.75 0.78
+        roughness 0.85
+        metalness 0
+      }
+      geometry Box {
+        size 4 4 0.05
+      }
+    }
+  ]
+  name "laboratory floor"
+  boundingObject Box {
+    size 4 4 0.05
+  }
+}
+Solid {
+  translation 0 2 0.05
+  children [
+    Shape {
+      appearance DEF WALL_APPEARANCE PBRAppearance {
+        baseColor 0.18 0.25 0.34
+        roughness 0.75
+        metalness 0
+      }
+      geometry Box {
+        size 4.1 0.08 0.15
+      }
+    }
+  ]
+  name "north wall"
+  boundingObject Box {
+    size 4.1 0.08 0.15
+  }
+}
+Solid {
+  translation 0 -2 0.05
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 4.1 0.08 0.15
+      }
+    }
+  ]
+  name "south wall"
+  boundingObject Box {
+    size 4.1 0.08 0.15
+  }
+}
+Solid {
+  translation 2 0 0.05
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 4.1 0.15
+      }
+    }
+  ]
+  name "east wall"
+  boundingObject Box {
+    size 0.08 4.1 0.15
+  }
+}
+Solid {
+  translation -2 0 0.05
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 4.1 0.15
+      }
+    }
+  ]
+  name "west wall"
+  boundingObject Box {
+    size 0.08 4.1 0.15
+  }
+}
+E-puck {
+  hidden position_0_0 2.649876802184291e-08
+  hidden position_0_1 2.649872974136686e-08
+  hidden rotation_1 0 1 0 2.9802322387695313e-08
+  hidden rotation_2 0 1 0 2.9802322387695313e-08
+  translation 0 1.1483199119632741e-15 -5.590164451165641e-05
+  rotation 1 0 0 2.8269055602669935e-08
+  name "speech-controlled e-puck"
+  controller "lab4_student"
+  version "2"
+}
